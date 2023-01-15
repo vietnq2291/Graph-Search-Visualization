@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class DFS extends Algorithm {
 
-    private HashMap<Integer, Boolean> visited;
+    private HashMap<String, Boolean> visited;
 
     public DFS() {
         super();
@@ -22,7 +22,7 @@ public class DFS extends Algorithm {
 
     @Override
     public void execute() {
-        int s = this.getStartVertexId();
+        String s = this.getStartVertexName();
         dfs(this.getGraph().getVertex(s));
     }
 

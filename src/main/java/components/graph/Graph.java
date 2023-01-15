@@ -10,7 +10,7 @@ import java.util.*;
 
 public abstract class Graph {
 
-    private HashMap<Integer, Vertex> vertices;
+    private HashMap<String, Vertex> vertices;
     private List<Edge> edges;
     private boolean isDirected;
     private boolean isWeighted;
@@ -18,7 +18,7 @@ public abstract class Graph {
     public Graph(boolean isDirected, boolean isWeighted) {
         this.isDirected = isDirected;
         this.isWeighted = isWeighted;
-        this.vertices = new HashMap<>();
+        this.vertices = new HashMap<String, Vertex>();
         this.edges = new ArrayList<>();
     }
 
@@ -31,18 +31,20 @@ public abstract class Graph {
         return 1;
     }
 
-    public Integer setVertexName(Vertex v) {
+    public String setVertexName(Vertex v) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Set vertex name");
         dialog.setHeaderText("Provide new value");
         Optional<String> result = dialog.showAndWait();
 
         while (result.isPresent() && result.get() != "") {
-            Integer newValue = Integer.parseInt(result.get());
-            if(vertices.keySet().contains(newValue)) {
+            String newValue = result.get();
+
+            if (vertices.keySet().contains(newValue)) {
                 dialog.setHeaderText("Value is already in use. Provide a new value");
                 result = dialog.showAndWait();
             } else {
+                vertices.remove(v.getName());
                 v.setName(newValue);
                 return newValue;
             }
@@ -58,12 +60,12 @@ public abstract class Graph {
         edges.add(e);
     }
 
-    public HashMap<Integer, Vertex> getVertices() {
+    public HashMap<String, Vertex> getVertices() {
         return vertices;
     }
 
-    public Vertex getVertex(int id) {
-        return vertices.get(id);
+    public Vertex getVertex(String name) {
+        return vertices.get(name);
     }
     public List<Edge> getEdges() {
         return edges;

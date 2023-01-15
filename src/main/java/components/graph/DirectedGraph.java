@@ -39,10 +39,10 @@ public class DirectedGraph extends Graph {
     public void makeDemoGraph() {
         this.clear();
 
-        Vertex v0 = new Vertex(0, 100, 200);
-        Vertex v1 = new Vertex(1, 200, 100);
-        Vertex v2 = new Vertex(2, 300, 200);
-        Vertex v3 = new Vertex(3, 200, 300);
+        Vertex v0 = new Vertex("0", 100, 200);
+        Vertex v1 = new Vertex("1", 200, 100);
+        Vertex v2 = new Vertex("2", 300, 200);
+        Vertex v3 = new Vertex("3", 200, 300);
 
         DirectedEdge e01 = new DirectedEdge(v0, v1);
         DirectedEdge e02 = new DirectedEdge(v0, v2);

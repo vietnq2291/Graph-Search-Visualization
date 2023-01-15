@@ -2,16 +2,11 @@ package components.vertex;
 
 import components.edge.Edge;
 import components.status.Status;
-import javafx.event.EventHandler;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Set;
 
 public class Vertex extends StackPane {
 
@@ -20,7 +15,7 @@ public class Vertex extends StackPane {
     private String CIRCLE_SELECTED_STYLE = "-fx-fill:orange;-fx-stroke-width:2px;-fx-stroke:black;";
     private String CIRCLE_FINISHED_STYLE = "-fx-fill:purple;-fx-stroke-width:2px;-fx-stroke:black;";
 
-    private int name;
+    private String name;
     private double x, y;
     private static int radius = 20;
     private Circle circle = new Circle();
@@ -39,7 +34,7 @@ public class Vertex extends StackPane {
         makeShape();
         makeHandler();
     }
-    public Vertex(int name, double x, double y) {
+    public Vertex(String name, double x, double y) {
         this.name = name;
         this.edges = new ArrayList<>();
         this.setLayoutX(x);
@@ -103,14 +98,14 @@ public class Vertex extends StackPane {
         this.edges.add(e);
     }
 
-    public void setName(int name) {
+    public void setName(String name) {
         this.name = name;
-        label.setText(String.valueOf(this.name));
+        label.setText(name);
     }
 
 
 
-    public int getName() {
+    public String getName() {
         return name;
     }
 

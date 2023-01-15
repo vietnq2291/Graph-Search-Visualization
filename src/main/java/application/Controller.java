@@ -48,22 +48,12 @@ public class Controller implements Initializable {
 
     public void makeVertexHandler(Vertex v) {
 
-        // rename vertex
-        v.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getClickCount() == 2) {
-                    graph.setVertexName(v);
-                }
-            }
-        });
-
-        // add new edge on Alt + click
         v.setOnMouseClicked(new EventHandler<MouseEvent>() {
             static Vertex firstVertex = null;
             @Override
             public void handle(MouseEvent event) {
                 if (event.isAltDown()) {
+                    // add new edge on Alt + click
                     if (firstVertex == null) {
                         firstVertex = v;
                         v.setVertexStyle(Status.SELECTED);
@@ -76,6 +66,11 @@ public class Controller implements Initializable {
                         firstVertex.setVertexStyle(Status.FREE);
                         firstVertex = null;
                     }
+                } else if (event.getClickCount() == 2) {
+                    // rename vertex in the graph
+                    System.out.println("double click");
+                    graph.setVertexName(v);
+                    graph.getVertices().put(v.getName(), v);
                 }
             }
         });

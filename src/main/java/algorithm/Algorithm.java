@@ -4,7 +4,7 @@ import components.graph.Graph;
 
 public abstract class Algorithm {
     private Graph graph;
-    private int startVertexId;
+    private String startVertexName;
 
     public Algorithm() {
     }
@@ -20,11 +20,11 @@ public abstract class Algorithm {
         this.graph = graph;
     }
 
-    public int getStartVertexId() {
-        return startVertexId;
+    public String getStartVertexName() {
+        return startVertexName;
     }
 
-    public void setStartVertexId(int startVertexId) {
-        this.startVertexId = startVertexId;
+    public void setStartVertexName(String name) {
+        this.startVertexName = name;
     }
 }

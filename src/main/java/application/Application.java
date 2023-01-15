@@ -1,11 +1,7 @@
 package application;
 
 import algorithm.DFS;
-import components.edge.DirectedEdge;
-import components.edge.Edge;
 import components.graph.DirectedGraph;
-import components.graph.Graph;
-import components.vertex.Vertex;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -29,7 +25,7 @@ public class Application extends javafx.application.Application {
         DFS dfs = new DFS();
         dfs.setGraph(dg);
         dfs.prepare();
-        dfs.setStartVertexId(2);
+        dfs.setStartVertexName("2");
         dfs.execute();
 
         controller.setGraph(dg);
