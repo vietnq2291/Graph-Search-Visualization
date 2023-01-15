@@ -1,27 +1,24 @@
 package components.edge;
 
+import components.status.Status;
 import components.vertex.Vertex;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.value.ChangeListener;
-import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 
-public abstract class Edge {
+public abstract class Edge extends Pane {
 
-    private String LINE_FREE_STYLE = "-fx-fill:white;-fx-stroke-width:2px;-fx-stroke:black;";
-    private String LINE_VISITING_STYLE = "-fx-fill:green;-fx-stroke-width:2px;-fx-stroke:black;";
-    private String LINE_SELECTED_STYLE = "-fx-fill:orange;-fx-stroke-width:2px;-fx-stroke:black;";
-    private String LINE_FINISHED_STYLE = "-fx-fill:purple;-fx-stroke-width:2px;-fx-stroke:black;";
+    private String LINE_FREE_STYLE = "-fx-fill:black;-fx-stroke-width:3px;-fx-stroke:black;";
+    private String LINE_VISITING_STYLE = "-fx-fill:green;-fx-stroke-width:3px;-fx-stroke:green;";
+    private String LINE_SELECTED_STYLE = "-fx-fill:orange;-fx-stroke-width:3px;-fx-stroke:orange;";
+    private String LINE_FINISHED_STYLE = "-fx-fill:purple;-fx-stroke-width:3px;-fx-stroke:#4d4949;";
 
-    private Text weightText;
-    private Pane pane;
     private Line line;
+    private Text weightText;
     private StackPane weightPane;
 
     private Vertex from;
@@ -30,67 +27,54 @@ public abstract class Edge {
     private boolean isWeighted;
     private boolean isDirected;
 
-    public Edge(Vertex from, Vertex to) {
+    public Edge(Vertex from, Vertex to, boolean isDirected) {
         this.from = from;
         this.to = to;
         this.weight = 0;
         this.isWeighted = false;
+        this.isDirected = isDirected;
         makeShape();
     }
-    public Edge(Vertex from, Vertex to, int weight) {
+    public Edge(Vertex from, Vertex to, boolean isDirected, int weight) {
         this.from = from;
         this.to = to;
         this.weight = weight;
         this.isWeighted = true;
+        this.isDirected = isDirected;
         makeShape();
     }
 
     private void makeShape() {
-        pane = new Pane();
-        line = createDirectedLine(from, to, pane);
+        if (isDirected) {
+            line = createDirectedLine(from, to);
+        } else {
+            line = createLine(from, to);
+        }
+
+        if (isWeighted) {
+            createWeightPane(line);
+            this.getChildren().add(weightPane);
+        }
     }
 
-    private Line createDirectedLine(StackPane startDot, StackPane endDot, Pane parent) {
-        Line virtualCenterLine = new Line();
-        virtualCenterLine.setOpacity(0);
-        virtualCenterLine.startXProperty().bind(startDot.layoutXProperty().add(startDot.translateXProperty()).add(startDot.widthProperty().divide(2)));
-        virtualCenterLine.startYProperty().bind(startDot.layoutYProperty().add(startDot.translateYProperty()).add(startDot.heightProperty().divide(2)));
-        virtualCenterLine.endXProperty().bind(endDot.layoutXProperty().add(endDot.translateXProperty()).add(endDot.widthProperty().divide(2)));
-        virtualCenterLine.endYProperty().bind(endDot.layoutYProperty().add(endDot.translateYProperty()).add(endDot.heightProperty().divide(2)));
+    private Line createDirectedLine(StackPane startDot, StackPane endDot) {
+        Line line = createLine(startDot, endDot);
 
-        Line directedLine = new Line();
-        directedLine.setStyle(LINE_FREE_STYLE);
-        directedLine.startXProperty().bind(virtualCenterLine.startXProperty());
-        directedLine.startYProperty().bind(virtualCenterLine.startYProperty());
-        directedLine.endXProperty().bind(virtualCenterLine.endXProperty());
-        directedLine.endYProperty().bind(virtualCenterLine.endYProperty());
+        StackPane arrow = createArrow(true, line, startDot, endDot);
+        this.getChildren().add(arrow);
+        return line;
+    }
 
+    private Line createLine(StackPane startDot, StackPane endDot) {
+        Line line = new Line();
+        line.setStyle(LINE_FREE_STYLE);
+        line.startXProperty().bind(startDot.layoutXProperty().add(startDot.translateXProperty()).add(startDot.widthProperty().divide(2)));
+        line.startYProperty().bind(startDot.layoutYProperty().add(startDot.translateYProperty()).add(startDot.heightProperty().divide(2)));
+        line.endXProperty().bind(endDot.layoutXProperty().add(endDot.translateXProperty()).add(endDot.widthProperty().divide(2)));
+        line.endYProperty().bind(endDot.layoutYProperty().add(endDot.translateYProperty()).add(endDot.heightProperty().divide(2)));
+        this.getChildren().add(line);
 
-//        final ChangeListener<Number> listener = (obs, old, newVal) -> {
-//            Rotate r = new Rotate();
-//            r.setPivotX(virtualCenterLine.getStartX());
-//            r.setPivotY(virtualCenterLine.getStartY());
-//            Point2D point = r.transform(new Point2D(virtualCenterLine.getStartX(), virtualCenterLine.getStartY()));
-//            directedLine.setStartX(point.getX());
-//            directedLine.setStartY(point.getY());
-//
-//            Rotate r2 = new Rotate();
-//            r2.setPivotX(virtualCenterLine.getEndX());
-//            r2.setPivotY(virtualCenterLine.getEndY());
-//            Point2D point2 = r2.transform(new Point2D(virtualCenterLine.getEndX(), virtualCenterLine.getEndY()));
-//            directedLine.setEndX(point2.getX());
-//            directedLine.setEndY(point2.getY());
-//        };
-
-//        virtualCenterLine.startXProperty().addListener(listener);
-//        virtualCenterLine.startYProperty().addListener(listener);
-//        virtualCenterLine.endXProperty().addListener(listener);
-//        virtualCenterLine.endYProperty().addListener(listener);
-
-        StackPane mainArrow = createArrow(true, directedLine, startDot, endDot);
-        createWeightPane(directedLine);
-        parent.getChildren().addAll(  directedLine, mainArrow, weightPane);
-        return directedLine;
+        return line;
     }
 
     private StackPane createArrow(boolean toLineEnd, Line line, StackPane startDot, StackPane endDot) {
@@ -183,13 +167,26 @@ public abstract class Edge {
         weightPane.layoutYProperty().bind(line.startYProperty().add(lineYHalfLength.subtract(wgtSqrHalfHeight)));
     }
 
-    public Pane getEdgePane() {
-        return this.pane;
+    public void setEdgeStyle(Status status) {
+        switch (status) {
+            case VISITING -> line.setStyle(LINE_VISITING_STYLE);
+            case SELECTED -> line.setStyle(LINE_SELECTED_STYLE);
+            case FREE -> this.setStyle(LINE_FREE_STYLE);
+            case FINISHED -> line.setStyle(LINE_FINISHED_STYLE);
+        }
+        System.out.println("Edge " + from.getName() + " -> " + to.getName() + " is " + status);
     }
 
     public void setWeight(int weight) {
         this.weight = weight;
         this.isWeighted = true;
+
+        if (weightPane != null) {
+            weightText.setText(String.valueOf(weight));
+        } else {
+            createWeightPane(line);
+            this.getChildren().add(weightPane);
+        }
     }
 
     public void setWeighted(boolean weighted) {
@@ -202,6 +199,14 @@ public abstract class Edge {
 
     public Vertex getTo() {
         return to;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public StackPane getWeightPane() {
+        return weightPane;
     }
 
     public void setDirected(boolean isDirected) {

@@ -22,11 +22,6 @@ public class Vertex extends StackPane {
     private Label label = new Label();
     private ArrayList<Edge> edges;
 
-
-//    public Vertex(int name) {
-//        this.name = name;
-//        this.edges = new ArrayList<>();
-//    }
     public Vertex(double x, double y) {
         this.edges = new ArrayList<>();
         this.setLayoutX(x);
@@ -98,6 +93,12 @@ public class Vertex extends StackPane {
         this.edges.add(e);
     }
 
+    public void removeConnectedEdge(Edge e) {
+        if (!this.edges.contains(e))
+            return;
+        this.edges.remove(e);
+    }
+
     public void setName(String name) {
         this.name = name;
         label.setText(name);
@@ -116,4 +117,5 @@ public class Vertex extends StackPane {
     public ArrayList<Edge> getConnectedEdges() {
         return edges;
     }
+
 }

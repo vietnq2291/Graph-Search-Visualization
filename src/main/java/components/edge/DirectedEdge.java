@@ -5,12 +5,11 @@ import components.vertex.Vertex;
 public class DirectedEdge extends Edge {
 
     public DirectedEdge(Vertex from, Vertex to) {
-        super(from, to);
+        super(from, to, true);
         super.setDirected(true);
     }
     public DirectedEdge(Vertex from, Vertex to, int weight) {
-        super(from, to, weight);
-        super.setDirected(true);
+        super(from, to, true, weight);
     }
 
     @Override

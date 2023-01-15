@@ -5,6 +5,7 @@ import components.vertex.Vertex;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 
 import java.util.*;
 
@@ -31,7 +32,7 @@ public abstract class Graph {
         return 1;
     }
 
-    public String setVertexName(Vertex v) {
+    public int setVertexName(Vertex v) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Set vertex name");
         dialog.setHeaderText("Provide new value");
@@ -46,13 +47,38 @@ public abstract class Graph {
             } else {
                 vertices.remove(v.getName());
                 v.setName(newValue);
-                return newValue;
+                return 1;
             }
         }
-        return null;
+        return -1;
     }
 
-    public abstract Edge makeNewEdge(Vertex v1, Vertex v2);
+    public abstract Edge makeNewEdge(Vertex from, Vertex to, boolean isWeighted);
+
+    public abstract void removeEdge(Edge e, AnchorPane playground);
+
+    public abstract void removeVertex(Vertex v, AnchorPane playground);
+
+    public int setEdgeWeight(Edge e) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Set edge weight");
+        dialog.setHeaderText("Provide new value");
+        Optional<String> result = dialog.showAndWait();
+
+        while (result.isPresent() && result.get() != "") {
+            String newValue = result.get();
+
+            try {
+                int weight = Integer.parseInt(newValue);
+                e.setWeight(weight);
+                return 1;
+            } catch (NumberFormatException ex) {
+                dialog.setHeaderText("Value is not a number. Provide a new value");
+                result = dialog.showAndWait();
+            }
+        }
+        return -1;
+    }
 
     public void addEdge(Edge e) {
         if (edges.contains(e))
@@ -77,6 +103,14 @@ public abstract class Graph {
     }
 
     public abstract void makeDemoGraph();
+
+    public void setWeighted(boolean weighted) {
+        isWeighted = weighted;
+    }
+
+    public boolean isWeighted() {
+        return isWeighted;
+    }
 
 
 //    public void fromAdjacencyMatrix(Integer[][] adjacencyMatrix) {

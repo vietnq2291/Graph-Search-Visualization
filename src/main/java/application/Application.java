@@ -22,11 +22,11 @@ public class Application extends javafx.application.Application {
         DirectedGraph dg = new DirectedGraph();
         dg.makeDemoGraph();
 
-        DFS dfs = new DFS();
-        dfs.setGraph(dg);
-        dfs.prepare();
-        dfs.setStartVertexName("2");
-        dfs.execute();
+//        DFS dfs = new DFS();
+//        dfs.setGraph(dg);
+//        dfs.prepare();
+//        dfs.setStartVertexName("2");
+//        dfs.execute();
 
         controller.setGraph(dg);
         controller.displayGraph();
