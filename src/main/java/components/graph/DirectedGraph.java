@@ -10,7 +10,10 @@ import java.util.Iterator;
 public class DirectedGraph extends Graph {
 
     public DirectedGraph() {
-        super(true, true);
+        super(true, false);
+    }
+    public DirectedGraph(boolean isWeighted) {
+        super(true, isWeighted);
     }
 
     public void addEdge(Edge edge) {

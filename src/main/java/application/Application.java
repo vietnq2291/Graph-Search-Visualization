@@ -18,9 +18,14 @@ public class Application extends javafx.application.Application {
         stage.setScene(scene);
         stage.show();
 
+
+        Context context = controller.makeNewContext();
+
+
+
         // Demo
-        DirectedGraph dg = new DirectedGraph();
-        dg.makeDemoGraph();
+//        DirectedGraph dg = new DirectedGraph();
+//        dg.makeDemoGraph();
 
 //        DFS dfs = new DFS();
 //        dfs.setGraph(dg);
@@ -28,8 +33,8 @@ public class Application extends javafx.application.Application {
 //        dfs.setStartVertexName("2");
 //        dfs.execute();
 
-        controller.setGraph(dg);
-        controller.displayGraph();
+//        controller.setGraph(dg);
+//        controller.displayGraph();
     }
 
     public static void main(String[] args) {
