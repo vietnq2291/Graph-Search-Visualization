@@ -32,6 +32,15 @@ public class Controller implements Initializable {
     private Button showCoordinate;
 
     @FXML
+    private Button btnClearGraph;
+
+    @FXML
+    public void clearGraph() {
+        playground.getChildren().clear();
+        graph.clear();
+    }
+
+    @FXML
     public void displayVertexCoordinate() {
         System.out.println();
         for (Vertex v : graph.getVertices().values()) {
