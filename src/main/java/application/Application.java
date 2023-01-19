@@ -19,7 +19,7 @@ public class Application extends javafx.application.Application {
         stage.show();
 
 
-        Context context = controller.makeNewContext();
+        controller.makeNewContext();
 
 
 

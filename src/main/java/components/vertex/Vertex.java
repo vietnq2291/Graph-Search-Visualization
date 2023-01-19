@@ -16,7 +16,6 @@ public class Vertex extends StackPane {
     private String CIRCLE_FINISHED_STYLE = "-fx-fill:purple;-fx-stroke-width:2px;-fx-stroke:black;";
 
     private String name;
-    private double x, y;
     private static int radius = 20;
     private Circle circle = new Circle();
     private Label label = new Label();
@@ -27,7 +26,6 @@ public class Vertex extends StackPane {
         this.setLayoutX(x);
         this.setLayoutY(y);
         makeShape();
-        makeHandler();
     }
     public Vertex(String name, double x, double y) {
         this.name = name;
@@ -35,7 +33,6 @@ public class Vertex extends StackPane {
         this.setLayoutX(x);
         this.setLayoutY(y);
         makeShape();
-        makeHandler();
     }
 
     private void makeShape() {
@@ -53,28 +50,6 @@ public class Vertex extends StackPane {
         this.setPrefSize(paneSize, paneSize);
         this.setMaxSize(paneSize, paneSize);
         this.setMinSize(paneSize, paneSize);
-    }
-
-    private void makeHandler() {
-        this.setOnMousePressed(e -> {
-            x = e.getSceneX();
-            y = e.getSceneY();
-        });
-
-        this.setOnMouseDragged(e -> {
-            this.setTranslateX(e.getSceneX() - x);
-            this.setTranslateY(e.getSceneY() - y);
-        });
-
-        this.setOnMouseReleased(e -> {
-            // Updating the new layout positions
-            this.setLayoutX(this.getLayoutX() + this.getTranslateX());
-            this.setLayoutY(this.getLayoutY() + this.getTranslateY());
-
-            // Resetting the translate positions
-            this.setTranslateX(0);
-            this.setTranslateY(0);
-        });
     }
 
     public void setVertexStyle(Status status) {
@@ -103,8 +78,6 @@ public class Vertex extends StackPane {
         this.name = name;
         label.setText(name);
     }
-
-
 
     public String getName() {
         return name;

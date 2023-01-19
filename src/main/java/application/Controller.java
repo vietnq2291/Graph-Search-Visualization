@@ -4,6 +4,7 @@ import components.edge.DirectedEdge;
 import components.edge.Edge;
 import components.graph.DirectedGraph;
 import components.graph.Graph;
+import components.graph.GraphType;
 import components.graph.UnDirectedGraph;
 import components.status.Status;
 import components.vertex.Vertex;
@@ -21,103 +22,71 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
-    private Context context;
-
     @FXML
     private AnchorPane playground;
-
-    @FXML
-    public void initialize(URL location, ResourceBundle resources) {
-        initGraphTypes();
-    }
-
     @FXML
     private Button showCoordinate;
-
+    @FXML
+    private Button btnNewContext;
     @FXML
     private ComboBox optGraphType;
-
     @FXML
     private Button btnNewGraph;
-
     @FXML
     private Button btnClearGraph;
-
 //    @FXML
 //    private Button btnSetStartVertex;
 
-    @FXML
-    private Button btnNewContext;
+    private double sceneX;
+    private double sceneY;
+    private Context context;
+
 
     @FXML
-    public Context makeNewContext() {
+    public void initialize(URL location, ResourceBundle resources) {
+        initGraphTypeChooser();
+    }
+
+    @FXML
+    public void makeNewContext() {
         playground.getChildren().clear();
 
         this.context = new Context();
-        optGraphType.setValue("Choose graph type...");
+        this.optGraphType.setValue(null);
+        this.btnNewGraph.setDisable(false);
         playground.setOnMouseClicked(null);
-
-        return context;
     }
 
-    private void initGraphTypes() {
-        optGraphType.getItems().addAll("Unweighted Directed Graph", "Unweighted Undirected Graph", "Weighted Directed Graph", "Weighted Undirected Graph");
-        optGraphType.setValue("Choose graph type...");
+    // Graph functions ---------------------------------------------------------
+    private void initGraphTypeChooser() {
+        optGraphType.getItems().addAll( GraphType.UNWEIGHTED_UNDIRECTED,
+                                        GraphType.UNWEIGHTED_DIRECTED,
+                                        GraphType.WEIGHTED_UNDIRECTED,
+                                        GraphType.WEIGHTED_DIRECTED);
     }
 
     public void selectNewGraph() {
-        String graphType = optGraphType.getValue().toString();
-
-        if (graphType.equals("Choose graph type...")) {
+        if (optGraphType.getValue() == null) {
             return;
         }
 
-        if (graphType.equals("Unweighted Directed Graph")) {
+        GraphType graphType = (GraphType) optGraphType.getValue();
+
+        if (graphType.equals(GraphType.UNWEIGHTED_DIRECTED)) {
             context.setGraph(new DirectedGraph(false));
-        } else if (graphType.equals(("Weighted Directed Graph"))) {
+        } else if (graphType.equals((GraphType.WEIGHTED_DIRECTED))) {
             context.setGraph(new DirectedGraph(true));
-        } else if (graphType.equals("Unweighted Undirected Graph")) {
+        } else if (graphType.equals(GraphType.UNWEIGHTED_UNDIRECTED)) {
             context.setGraph(new UnDirectedGraph(false));
-        } else if (graphType.equals("Weighted Undirected Graph")) {
+        } else if (graphType.equals(GraphType.WEIGHTED_UNDIRECTED)) {
             context.setGraph(new UnDirectedGraph(true));
         }
 
         initPlayground();
-    }
-
-    @FXML
-    public void clearGraph() {
-        playground.getChildren().clear();
-        context.getGraph().clear();
-    }
-
-    @FXML
-    public void displayVertexCoordinate() {
-        System.out.println();
-        for (Vertex v : context.getGraph().getVertices().values()) {
-            System.out.println("Vertex v" + v.getName() + " = new Vertex(\""
-                                            + v.getName() + "\", " + v.getLayoutX() + ", " + v.getLayoutY() + ");");
-        }
-        for (Edge e : context.getGraph().getEdges()) {
-            System.out.println(
-                                "DirectedEdge e" + e.getFrom().getName() + "" + e.getTo().getName() + " = new DirectedEdge(v"
-                                + e.getFrom().getName() + ", v" + e.getTo().getName() +
-                                        (context.getGraph().isWeighted() ? ", " + e.getWeight() : "") + ");");
-        }
-
-        System.out.println();
-        for (Vertex v : context.getGraph().getVertices().values()) {
-            System.out.println("this.addVertex(v" + v.getName() + ");");
-        }
-        for (Edge e : context.getGraph().getEdges()) {
-            System.out.println("this.addEdge(e" + e.getFrom().getName() + "" + e.getTo().getName() + ");");
-        }
-
-        System.out.println();
+        btnNewGraph.setDisable(true);
     }
 
     private void initPlayground() {
-
         // add new vertex on Ctrl + click
         playground.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -137,7 +106,30 @@ public class Controller implements Initializable {
         });
     }
 
-    public void makeEdgeHandler(Edge e) {
+    @FXML
+    public void clearGraph() {
+        playground.getChildren().clear();
+        context.getGraph().clear();
+    }
+
+    public void setGraph(Graph graph) {
+        this.context.setGraph(graph);
+    }
+
+
+    // Display and set event handlers for vertices & edges in playground
+    public void displayGraph() {
+        for (Edge e : context.getGraph().getEdges()) {
+            makeEdgeHandler(e);
+            playground.getChildren().add(0, e);
+        }
+        for (Vertex v : context.getGraph().getVertices().values()) {
+            makeVertexHandler(v);
+            playground.getChildren().add(v);
+        }
+    }
+
+    private void makeEdgeHandler(Edge e) {
         if (context.getGraph().isWeighted()) {
             e.getWeightPane().setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
@@ -159,7 +151,7 @@ public class Controller implements Initializable {
         });
     }
 
-    public void makeVertexHandler(Vertex v) {
+    private void makeVertexHandler(Vertex v) {
 
         v.setOnMouseClicked(new EventHandler<MouseEvent>() {
             static Vertex firstVertex = null;
@@ -191,26 +183,57 @@ public class Controller implements Initializable {
                 }
             }
         });
+
+        v.setOnMousePressed(e -> {
+            sceneX = e.getSceneX();
+            sceneY = e.getSceneY();
+        });
+
+        v.setOnMouseDragged(e -> {
+            double x = v.getLayoutX() + e.getSceneX() - sceneX;
+            double y = v.getLayoutY() + e.getSceneY() - sceneY;
+
+            if (10 < x && x < 850 && 10 < y && y < 525) {
+                v.setTranslateX(e.getSceneX() - sceneX);
+                v.setTranslateY(e.getSceneY() - sceneY);
+            }
+        });
+
+        v.setOnMouseReleased(e -> {
+            // Updating the new layout positions
+            v.setLayoutX(v.getLayoutX() + v.getTranslateX());
+            v.setLayoutY(v.getLayoutY() + v.getTranslateY());
+
+            // Resetting the translate positions
+            v.setTranslateX(0);
+            v.setTranslateY(0);
+        });
     }
 
-    public void setGraph(Graph graph) {
-        this.context.setGraph(graph);
-    }
 
-    public void displayGraph() {
-//        vertices = new ArrayList<>();
-//        vertices.addAll(graph.getVertices().values());
-//        playground.getChildren().addAll(vertices);
-        // add all edges from an array list
-        for (Edge e : context.getGraph().getEdges()) {
-            makeEdgeHandler(e);
-            playground.getChildren().add(0, e);
-        }
+    // Auxiliary functions -----------------------------------------------------
+    @FXML
+    public void displayVertexCoordinate() {
+        System.out.println();
         for (Vertex v : context.getGraph().getVertices().values()) {
-            makeVertexHandler(v);
-            playground.getChildren().add(v);
+            System.out.println("Vertex v" + v.getName() + " = new Vertex(\""
+                    + v.getName() + "\", " + v.getLayoutX() + ", " + v.getLayoutY() + ");");
         }
-//        playground.getChildren().add(new Vertex(2));
+        for (Edge e : context.getGraph().getEdges()) {
+            System.out.println(
+                    "DirectedEdge e" + e.getFrom().getName() + "" + e.getTo().getName() + " = new DirectedEdge(v"
+                            + e.getFrom().getName() + ", v" + e.getTo().getName() +
+                            (context.getGraph().isWeighted() ? ", " + e.getWeight() : "") + ");");
+        }
 
+        System.out.println();
+        for (Vertex v : context.getGraph().getVertices().values()) {
+            System.out.println("this.addVertex(v" + v.getName() + ");");
+        }
+        for (Edge e : context.getGraph().getEdges()) {
+            System.out.println("this.addEdge(e" + e.getFrom().getName() + "" + e.getTo().getName() + ");");
+        }
+
+        System.out.println();
     }
 }
